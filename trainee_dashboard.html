@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Дашборд обучения стажёра</title>
+  <style>
+    :root{
+      --bg:#0f172a;
+      --panel:#111827;
+      --panel2:#172033;
+      --card:#1f2937;
+      --text:#f8fafc;
+      --muted:#9ca3af;
+      --line:#334155;
+      --green:#7cff6b;
+      --green2:#22c55e;
+      --yellow:#facc15;
+      --red:#fb7185;
+      --blue:#60a5fa;
+      --purple:#c084fc;
+      --white:#fff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background:linear-gradient(135deg,#0f172a,#111827 60%,#0b1120);
+      color:var(--text);
+    }
+    .wrap{max-width:1180px;margin:0 auto;padding:26px}
+    .hero{
+      display:grid;
+      grid-template-columns:1.4fr .8fr;
+      gap:18px;
+      align-items:stretch;
+      margin-bottom:18px;
+    }
+    .hero-card,.panel{
+      background:rgba(17,24,39,.94);
+      border:1px solid rgba(148,163,184,.18);
+      box-shadow:0 16px 46px rgba(0,0,0,.25);
+      border-radius:24px;
+      padding:22px;
+    }
+    h1{font-size:30px;line-height:1.1;margin:0 0 10px}
+    .lead{color:#cbd5e1;line-height:1.55;margin:0;max-width:780px}
+    .meta{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+      margin-top:18px;
+    }
+    label{font-size:13px;color:#cbd5e1;display:block;margin-bottom:6px}
+    input,select,textarea{
+      width:100%;
+      border:1px solid var(--line);
+      background:#0b1220;
+      color:var(--text);
+      border-radius:14px;
+      padding:11px 12px;
+      outline:none;
+      font-size:14px;
+    }
+    input:focus,select:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(124,255,107,.12)}
+    .progress-circle{
+      width:148px;height:148px;border-radius:50%;
+      background:conic-gradient(var(--green) 0deg,#263244 0deg);
+      display:flex;align-items:center;justify-content:center;margin:0 auto 12px;
+      position:relative;
+    }
+    .progress-circle:before{
+      content:"";position:absolute;width:112px;height:112px;border-radius:50%;background:#111827;
+    }
+    .progress-num{position:relative;font-size:30px;font-weight:800}
+    .progress-caption{text-align:center;color:#cbd5e1;font-size:14px;margin-bottom:14px}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .stat{background:#0b1220;border:1px solid var(--line);border-radius:16px;padding:12px;text-align:center}
+    .stat b{font-size:22px;display:block}
+    .stat span{font-size:12px;color:var(--muted)}
+    .toolbar{
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0;
+    }
+    .search{flex:1;min-width:230px}
+    button{
+      border:0;border-radius:14px;padding:11px 14px;font-weight:700;
+      color:#0b1220;background:var(--green);cursor:pointer;
+      transition:.15s transform,.15s opacity,.15s background;
+    }
+    button:hover{transform:translateY(-1px)}
+    button.secondary{background:#273244;color:#e5e7eb;border:1px solid var(--line)}
+    button.danger{background:#fb7185;color:#fff}
+    .routes{display:grid;gap:14px}
+    details{
+      background:rgba(17,24,39,.92);
+      border:1px solid rgba(148,163,184,.16);
+      border-radius:22px;
+      overflow:hidden;
+    }
+    details[open] summary{border-bottom:1px solid rgba(148,163,184,.16)}
+    summary{
+      list-style:none;cursor:pointer;padding:18px 20px;font-weight:800;
+      display:flex;align-items:center;gap:10px;
+    }
+    summary::-webkit-details-marker{display:none}
+    .route-title{flex:1}
+    .route-pill{font-size:12px;color:#0b1220;background:var(--green);border-radius:99px;padding:5px 9px}
+    .route-body{padding:16px}
+    .module-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .module{
+      background:#0b1220;border:1px solid rgba(148,163,184,.16);
+      border-radius:18px;padding:14px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;
+    }
+    .module:hover{border-color:rgba(124,255,107,.45)}
+    .check{
+      width:24px;height:24px;border-radius:8px;border:2px solid #475569;
+      display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;
+      font-weight:900;color:#0b1220;background:transparent;margin-top:2px;
+    }
+    .module.done .check{background:var(--green);border-color:var(--green)}
+    .module.done .check:after{content:"✓"}
+    .module h3{margin:0 0 5px;font-size:15px}
+    .module p{margin:0;color:#94a3b8;font-size:13px;line-height:1.4}
+    .tagrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .tag{font-size:11px;color:#cbd5e1;background:#1f2937;border:1px solid #334155;padding:4px 7px;border-radius:99px}
+    .status{
+      font-size:11px;border-radius:99px;padding:5px 8px;white-space:nowrap;
+      background:#273244;color:#cbd5e1;
+    }
+    .module.done .status{background:rgba(124,255,107,.16);color:var(--green)}
+    .note{
+      margin-top:18px;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.25);
+      color:#dbeafe;border-radius:18px;padding:14px;line-height:1.5;font-size:14px;
+    }
+    .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .legend span{font-size:12px;color:#cbd5e1;background:#0b1220;border:1px solid var(--line);border-radius:99px;padding:6px 9px}
+    .date-summary{margin-top:12px;background:#0b1220;border:1px solid var(--line);border-radius:14px;padding:10px 12px;color:#cbd5e1;font-size:13px;line-height:1.4;text-align:center}
+    .footer-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .toast{
+      position:fixed;right:20px;bottom:20px;background:#111827;border:1px solid rgba(124,255,107,.35);
+      color:#e5e7eb;border-radius:16px;padding:12px 14px;box-shadow:0 14px 44px rgba(0,0,0,.35);
+      opacity:0;transform:translateY(10px);pointer-events:none;transition:.2s;
+      max-width:360px;
+    }
+    .toast.show{opacity:1;transform:translateY(0)}
+    @media (max-width:860px){
+      .hero{grid-template-columns:1fr}
+      .module-grid{grid-template-columns:1fr}
+      .meta{grid-template-columns:1fr}
+      .wrap{padding:16px}
+    }
+    @media print{
+      body{background:#fff;color:#111827}
+      .hero-card,.panel,details{box-shadow:none;border:1px solid #ddd;background:#fff;color:#111827}
+      input,select{border:1px solid #ddd;color:#111827;background:#fff}
+      button,.toolbar{display:none}
+      .module{background:#fff;border:1px solid #ddd}
+      .module p,.lead,.progress-caption,.tag,label{color:#374151}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-card">
+        <h1>Дашборд обучения стажёра</h1>
+        <p class="lead">Отмечайте пройденные статьи по маршрутам. Прогресс сохраняется в браузере автоматически и помогает видеть, какие темы уже закрыты, а что ещё нужно пройти перед допуском к работе.</p>
+        <div class="meta">
+          <div>
+            <label for="traineeName">Имя стажёра</label>
+            <input id="traineeName" placeholder="Например: Аня" />
+          </div>
+          <div>
+            <label for="startDate">Дата начала обучения</label>
+            <input id="startDate" type="date" />
+          </div>
+          <div>
+            <label for="endDate">Плановая дата завершения</label>
+            <input id="endDate" type="date" />
+          </div>
+        </div>
+        <div class="legend">
+          <span>✅ Пройдено</span>
+          <span>🟡 В процессе</span>
+          <span>📌 Можно использовать как карту обучения</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="progress-circle" id="circle"><div class="progress-num" id="progressNum">0%</div></div>
+        <div class="progress-caption" id="progressText">Пока ничего не отмечено</div>
+        <div class="stats">
+          <div class="stat"><b id="doneCount">0</b><span>пройдено</span></div>
+          <div class="stat"><b id="leftCount">0</b><span>осталось</span></div>
+        </div>
+        <div class="date-summary" id="dateSummary">Даты обучения не указаны</div>
+        <div class="footer-actions">
+          <button class="secondary" onclick="copyReport()">Скопировать отчёт</button>
+          <button class="secondary" onclick="window.print()">Печать / PDF</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <input class="search" id="search" placeholder="Поиск по темам: платежи, гео, UDP, тарифы..." />
+      <select id="filterRoute">
+        <option value="">Все маршруты</option>
+      </select>
+      <button class="secondary" onclick="markVisible(true)">Отметить видимое</button>
+      <button class="secondary" onclick="markVisible(false)">Снять видимое</button>
+      <button class="danger" onclick="resetProgress()">Сбросить</button>
+    </section>
+
+    <section class="routes" id="routes"></section>
+
+    <div class="note">
+      Важно: отметка «пройдено» не заменяет итоговый тест после категории. Дашборд нужен как личная карта обучения, чтобы стажёр, наставник и старший оператор быстро видели общий прогресс по маршрутам.
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+const ROUTES = [
+  {
+    id:"route1",
+    title:"Маршрут 1: База оператора",
+    icon:"🧭",
+    modules:[
+      {id:"tools", title:"Полезные инструменты", desc:"Рабочие сервисы, навигаторы, справочники и быстрые помощники для оператора.", tags:["инструменты","база"]},
+      {id:"base-info", title:"Базовая информация", desc:"Основные сущности: заказ, тариф, личный кабинет, доступы, базовая логика работы.", tags:["новичок","база"]},
+      {id:"base-cases", title:"Базовые кейсы", desc:"Простые типовые обращения, с которых стажёр начинает обучение.", tags:["кейсы","старт"]}
+    ]
+  },
+  {
+    id:"route2",
+    title:"Маршрут 2: Безопасность и ограничения",
+    icon:"🛡️",
+    modules:[
+      {id:"payments-gov", title:"Платёжные системы и гос.сайты", desc:"Правила доступа, анкеты, модерация, отказ без объяснений и красные флаги.", tags:["безопасность","платёжки","анкета"]},
+      {id:"provider-limits", title:"Ограничения доступа от провайдеров", desc:"Как работать с ограничениями, что нельзя обещать и когда консультацию нужно остановить.", tags:["ограничения","провайдеры","риски"]}
+    ]
+  },
+  {
+    id:"route3",
+    title:"Маршрут 3: Техническая диагностика",
+    icon:"🛠️",
+    modules:[
+      {id:"order-check", title:"Проверка заказа", desc:"Как проверить статус, срок, выдачу, данные доступа и базовую информацию по заказу.", tags:["заказ","проверка"]},
+      {id:"proxy-not-working", title:"Прокси не работает", desc:"Базовый алгоритм диагностики: данные, настройки, ошибки, проверка и передача инженерам.", tags:["диагностика","ошибка"]},
+      {id:"wrong-geo", title:"Неверное ГЕО", desc:"Как объяснять расхождения геолокации и какие данные запросить у клиента.", tags:["гео","maxmind","чекеры"]},
+      {id:"geo-crisis", title:"Геолокационный кризис или что такое неверные геолокации", desc:"Расширенная логика по геобазам, чекерам и ожиданиям клиента.", tags:["гео","кризис","объяснение"]},
+      {id:"udp", title:"Что такое UDP и как с этим работать?", desc:"Простое объяснение UDP, ограничений и корректной консультации клиента.", tags:["udp","протоколы"]},
+      {id:"dns-proxy", title:"DNS прокси", desc:"DNS, резолверы, возможные ошибки и базовые пояснения для клиента.", tags:["dns","техника"]}
+    ]
+  },
+  {
+    id:"route4",
+    title:"Маршрут 4: Деньги, оплаты и возвраты",
+    icon:"💸",
+    modules:[
+      {id:"payment-missing", title:"Не дошел платеж", desc:"Что запросить у клиента, как отличать заказ от баланса и когда передавать проверку.", tags:["оплата","платёж","агрегатор"]},
+      {id:"nopaid-activation", title:"Активация NO_PAID заказов после оплаты", desc:"Когда заказ не активировался автоматически и как правильно действовать.", tags:["no_paid","активация"]},
+      {id:"preorder", title:"Предзаказ адресов", desc:"Как объяснять ожидание, сроки и условия предзаказа адресов.", tags:["предзаказ","адреса"]},
+      {id:"partner-withdraw", title:"Вывод партнерских начислений", desc:"Базовые правила по партнёрским начислениям и передаче вопроса.", tags:["партнёрка","вывод"]},
+      {id:"alipay", title:"Как работать с AliPay", desc:"Особенности работы с AliPay и корректные действия оператора.", tags:["alipay","оплата"]}
+    ]
+  },
+  {
+    id:"route5",
+    title:"Маршрут 5: Тарифы и подбор",
+    icon:"🧩",
+    modules:[
+      {id:"tariffs-summary", title:"Сводка по тарифам", desc:"Короткое сравнение тарифов: серверные, ISP, мобильные, резидентские.", tags:["тарифы","подбор"]},
+      {id:"avito", title:"Прокси под авито", desc:"Как консультировать по задаче Авито и какие ограничения учитывать.", tags:["авито","подбор"]},
+      {id:"test-module-course", title:"Практический курс для тестового модуля", desc:"Практика подбора и обработки типовых кейсов в тестовом формате.", tags:["практика","тест"]},
+      {id:"internship-questions", title:"Стажировка и вопросы", desc:"Частые вопросы стажёра, правила прохождения и ожидания по обучению.", tags:["стажировка","вопросы"]}
+    ]
+  }
+];
+
+const STORAGE_KEY = "proxys_training_dashboard_v1";
+let state = loadState();
+
+function loadState(){
+  try{
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {done:{}, name:"", startDate:"", endDate:""};
+  }catch(e){
+    return {done:{}, name:"", startDate:"", endDate:""};
+  }
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+function toast(msg){
+  const el=document.getElementById("toast");
+  el.textContent=msg; el.classList.add("show");
+  setTimeout(()=>el.classList.remove("show"),2200);
+}
+function allModules(){ return ROUTES.flatMap(r=>r.modules.map(m=>({...m, routeId:r.id, routeTitle:r.title}))); }
+function renderFilters(){
+  const select=document.getElementById("filterRoute");
+  ROUTES.forEach(r=>{
+    const opt=document.createElement("option");
+    opt.value=r.id; opt.textContent=r.title;
+    select.appendChild(opt);
+  });
+}
+function render(){
+  const root=document.getElementById("routes");
+  const query=(document.getElementById("search").value||"").toLowerCase().trim();
+  const routeFilter=document.getElementById("filterRoute").value;
+  root.innerHTML="";
+  ROUTES.forEach(route=>{
+    if(routeFilter && route.id!==routeFilter) return;
+    const visibleModules=route.modules.filter(m=>{
+      const hay=[m.title,m.desc,...m.tags,route.title].join(" ").toLowerCase();
+      return !query || hay.includes(query);
+    });
+    if(!visibleModules.length) return;
+    const details=document.createElement("details");
+    details.open=true;
+    const done=route.modules.filter(m=>state.done[m.id]).length;
+    const pct=Math.round(done/route.modules.length*100);
+    details.innerHTML = `
+      <summary>
+        <span>${route.icon}</span>
+        <span class="route-title">${route.title}</span>
+        <span class="route-pill">${done}/${route.modules.length} · ${pct}%</span>
+      </summary>
+      <div class="route-body">
+        <div class="module-grid">
+          ${visibleModules.map(m=>moduleHTML(m)).join("")}
+        </div>
+      </div>
+    `;
+    root.appendChild(details);
+  });
+  updateProgress();
+}
+function moduleHTML(m){
+  const done=!!state.done[m.id];
+  return `
+    <article class="module ${done?'done':''}" data-id="${m.id}">
+      <div class="check" role="button" title="Отметить пройденным" onclick="toggleModule('${m.id}')"></div>
+      <div>
+        <h3>${m.title}</h3>
+        <p>${m.desc}</p>
+        <div class="tagrow">${m.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      </div>
+      <span class="status">${done?'пройдено':'не пройдено'}</span>
+    </article>
+  `;
+}
+function toggleModule(id){
+  state.done[id]=!state.done[id];
+  if(!state.done[id]) delete state.done[id];
+  saveState(); render();
+}
+function updateProgress(){
+  const total=allModules().length;
+  const done=allModules().filter(m=>state.done[m.id]).length;
+  const left=total-done;
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById("doneCount").textContent=done;
+  document.getElementById("leftCount").textContent=left;
+  document.getElementById("progressNum").textContent=pct+"%";
+  document.getElementById("progressText").textContent= done ? `Пройдено ${done} из ${total} тем` : "Пока ничего не отмечено";
+  document.getElementById("circle").style.background=`conic-gradient(var(--green) ${pct*3.6}deg,#263244 0deg)`;
+  updateDateSummary();
+}
+function updateDateSummary(){
+  const start=document.getElementById("startDate")?.value;
+  const end=document.getElementById("endDate")?.value;
+  const el=document.getElementById("dateSummary");
+  if(!el) return;
+  if(!start && !end){ el.textContent="Даты обучения не указаны"; return; }
+  const startText=start ? formatDate(start) : "не указана";
+  const endText=end ? formatDate(end) : "не указана";
+  let extra="";
+  if(start && end){
+    const sDate=new Date(start+"T00:00:00");
+    const eDate=new Date(end+"T00:00:00");
+    const days=Math.round((eDate-sDate)/(1000*60*60*24))+1;
+    if(days>0) extra=` · ${days} дн.`;
+  }
+  el.textContent=`Обучение: ${startText} — ${endText}${extra}`;
+}
+function markVisible(value){
+  document.querySelectorAll(".module").forEach(el=>{
+    const id=el.dataset.id;
+    if(value) state.done[id]=true; else delete state.done[id];
+  });
+  saveState(); render();
+  toast(value ? "Видимые темы отмечены как пройденные" : "Отметки с видимых тем сняты");
+}
+function resetProgress(){
+  if(!confirm("Сбросить весь прогресс в этом браузере?")) return;
+  state.done={}; saveState(); render(); toast("Прогресс сброшен");
+}
+function copyReport(){
+  const name=document.getElementById("traineeName").value || "не указано";
+  const startDate=formatDate(document.getElementById("startDate").value) || "не указана";
+  const endDate=formatDate(document.getElementById("endDate").value) || "не указана";
+  const modules=allModules();
+  const done=modules.filter(m=>state.done[m.id]);
+  const left=modules.filter(m=>!state.done[m.id]);
+  const pct=Math.round(done.length/modules.length*100);
+  const text=[
+    `Дашборд обучения стажёра`,
+    `Стажёр: ${name}`,
+    `Дата начала обучения: ${startDate}`,
+    `Плановая дата завершения: ${endDate}`,
+    `Прогресс: ${pct}% (${done.length}/${modules.length})`,
+    ``,
+    `Пройдено:`,
+    ...(done.length ? done.map(m=>`- ${m.title}`) : ["- пока ничего не отмечено"]),
+    ``,
+    `Осталось:`,
+    ...(left.length ? left.map(m=>`- ${m.title}`) : ["- все темы отмечены как пройденные"])
+  ].join("\n");
+  navigator.clipboard.writeText(text).then(()=>toast("Отчёт скопирован"));
+}
+document.getElementById("search").addEventListener("input",render);
+document.getElementById("filterRoute").addEventListener("change",render);
+function formatDate(value){
+  if(!value) return "";
+  const [y,m,d]=value.split("-");
+  return `${d}.${m}.${y}`;
+}
+document.getElementById("traineeName").value=state.name||"";
+document.getElementById("startDate").value=state.startDate||"";
+document.getElementById("endDate").value=state.endDate||"";
+document.getElementById("traineeName").addEventListener("input",e=>{state.name=e.target.value;saveState();});
+document.getElementById("startDate").addEventListener("input",e=>{state.startDate=e.target.value;saveState();updateDateSummary();});
+document.getElementById("endDate").addEventListener("input",e=>{state.endDate=e.target.value;saveState();updateDateSummary();});
+renderFilters();
+render();
+</script>
+</body>
+</html>
